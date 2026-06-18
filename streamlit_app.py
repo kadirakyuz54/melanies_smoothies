@@ -1,5 +1,6 @@
 # Import python packages
 import streamlit as st
+from snowflake.snowpark.context import get_active_session
 from snowflake.snowpark.functions import col
 
 # Write directly to the app
@@ -9,10 +10,7 @@ st.write(
     """
 )
 
-# New connection structure mapping per lab guide
-cnx = st.connection("snowflake")
-session = cnx.session()
-
+session = get_active_session()
 my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'))
 
 # 1. Capture the customer's name
@@ -47,4 +45,6 @@ if ingredients_list:
         session.sql(my_insert_stmt).collect()
         
         # EXTRA CREDIT: Appending the customer's name dynamically to the success banner!
-        st.success(f'Your Smoothie is ordered, {name_on_order}!')
+        st.success(f'Your Smoothie is ordered, {name_on_order}!', icon="✅")
+
+
