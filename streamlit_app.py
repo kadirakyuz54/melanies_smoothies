@@ -32,12 +32,14 @@ if ingredients_list:
     for fruit_chosen in ingredients_list:
         ingredients_string += fruit_chosen + ' '
         
-        # Move the API call INSIDE the for-loop with proper indentation
+        # Display heading dynamically for each chosen fruit
         st.subheader(fruit_chosen + ' Nutrition Information')
-        smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/watermelon")
+        
+        # Dynamic API call fetching data based on the chosen fruit variable
+        smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/" + fruit_chosen)
         sf_df = st.dataframe(data=smoothiefroot_response.json(), use_container_width=True)
 
-    # 3. FIXED: Added 'name_on_order' column to the target column list
+    # 3. Target database insert statement construction
     my_insert_stmt = """insert into smoothies.public.orders(ingredients, name_on_order)
         values ('""" + ingredients_string + """', '""" + name_on_order + """')"""
 
@@ -47,5 +49,5 @@ if ingredients_list:
     if time_to_insert:
         session.sql(my_insert_stmt).collect()
         
-        # EXTRA CREDIT: Appending the customer's name dynamically to the success banner!
+        # Appending the customer's name dynamically to the success banner
         st.success(f'Your Smoothie is ordered, {name_on_order}!', icon="✅")
